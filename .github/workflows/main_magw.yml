@@ -49,6 +49,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: dotnet-app
+          path: dotnet-app
       
       - name: Login to Azure
         uses: azure/login@v2
@@ -57,11 +58,17 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_922A85F42B264A5BA140D1ED61F6636A }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_A955D39E38FF4E09A37BA6327C26D0AF }}
 
+      - name: Show downloaded artifact (debug)
+        if: ${{ always() }}
+        run: |
+          echo "Contents of $PWD"
+          dir -Recurse dotnet-app
+
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'magw'
           slot-name: 'Production'
-          package: ./dotnet-app
+          package: ${{ github.workspace }}\dotnet-app
           
